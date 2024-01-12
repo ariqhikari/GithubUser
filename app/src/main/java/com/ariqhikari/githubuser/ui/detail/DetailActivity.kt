@@ -4,10 +4,14 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.ariqhikari.githubuser.R
-import com.ariqhikari.githubuser.data.response.DetailUser
+import com.ariqhikari.githubuser.data.Result
+import com.ariqhikari.githubuser.data.local.entity.FavoriteEntity
+import com.ariqhikari.githubuser.data.remote.response.DetailUser
 import com.ariqhikari.githubuser.databinding.ActivityDetailBinding
+import com.ariqhikari.githubuser.ui.ViewModelFactory
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.snackbar.Snackbar
@@ -16,7 +20,9 @@ import com.google.android.material.tabs.TabLayoutMediator
 
 class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
-    private val detailViewModel by viewModels<DetailViewModel>()
+    private val detailViewModel by viewModels<DetailViewModel>() {
+        ViewModelFactory.getInstance(application)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,9 +31,10 @@ class DetailActivity : AppCompatActivity() {
 
         supportActionBar?.title = "Detail User"
 
+        binding.ibBack.setOnClickListener { onBackPressed() }
+
         getUser()
         setupPagerAdapter()
-        setupSnackBar()
     }
 
     private fun setupPagerAdapter() {
@@ -40,23 +47,79 @@ class DetailActivity : AppCompatActivity() {
         }.attach()
     }
 
-    private fun setupSnackBar() {
-        detailViewModel.snackbarText.observe(this) {
-            it.getContentIfNotHandled()?.let { snackBarText ->
-                Snackbar.make(
-                    window.decorView.rootView,
-                    snackBarText,
-                    Snackbar.LENGTH_SHORT
-                ).show()
+    private fun getUser() {
+        val username = intent.getStringExtra(EXTRA_DATA) as String
+        detailViewModel.getDetail(username).observe(this) { result ->
+            if (result != null) {
+                when (result) {
+                    is Result.Loading -> {
+//                        showLoading(true)
+                    }
+
+                    is Result.Success -> {
+//                        showLoading(false)
+                        val user = result.data
+                        setUser(user)
+                        getFavorite(FavoriteEntity(user.login!!, user.avatarUrl!!, user.htmlUrl!!))
+                    }
+
+                    is Result.Error -> {
+//                         showLoading(false)
+                        Snackbar.make(
+                            window.decorView.rootView,
+                            "Terjadi kesalahan" + result.error,
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+                }
             }
         }
     }
 
-    private fun getUser() {
-        val username = intent.getStringExtra(EXTRA_DATA) as String
-        detailViewModel.getDetail(username)
-        detailViewModel.user.observe(this) { user ->
-            setUser(user)
+    private fun getFavorite(user: FavoriteEntity) {
+        detailViewModel.getFavorite(user.username).observe(this) { result ->
+            if (result != null) {
+                detailViewModel.favorite = true
+                binding.fabFavorite.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        this,
+                        R.drawable.ic_favorite
+                    )
+                )
+            } else {
+                detailViewModel.favorite = false
+                binding.fabFavorite.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        this,
+                        R.drawable.ic_favorite_border
+                    )
+                )
+            }
+
+            addOrDeleteFavorite(user)
+        }
+    }
+
+    private fun addOrDeleteFavorite(user: FavoriteEntity) {
+        binding.fabFavorite.setOnClickListener {
+            if (!detailViewModel.favorite) {
+                detailViewModel.insertFavorite(user)
+
+                Snackbar.make(
+                    window.decorView.rootView,
+                    resources.getString(R.string.toast_save),
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            } else {
+                detailViewModel.deleteFavorite(user)
+
+                Snackbar.make(
+                    window.decorView.rootView,
+                    resources.getString(R.string.toast_delete),
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }
+
         }
     }
 

@@ -1,29 +1,54 @@
 package com.ariqhikari.githubuser.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.ariqhikari.githubuser.data.response.User
+import com.ariqhikari.githubuser.R
 import com.ariqhikari.githubuser.databinding.ActivityHomeBinding
+import com.ariqhikari.githubuser.ui.ViewModelFactory
+import com.ariqhikari.githubuser.data.Result
+import com.ariqhikari.githubuser.ui.favorite.FavoriteActivity
+import com.ariqhikari.githubuser.ui.setting.SettingActivity
 import com.google.android.material.snackbar.Snackbar
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
-    private val homeViewModel by viewModels<HomeViewModel>()
+    private val homeViewModel by viewModels<HomeViewModel>(){
+        ViewModelFactory.getInstance(application)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        supportActionBar?.title = "GitHub User"
-        homeViewModel.getDataSearch("ariq")
+        val layoutManager = LinearLayoutManager(this)
+        binding.rvUser.layoutManager = layoutManager
 
+        setupMenu()
         setupSearchBar()
-        setupUsers()
-        setupSnackBar()
+        setupUsers("ariq")
+    }
+
+    private fun setupMenu() {
+        binding.topAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.action_favorite -> {
+                    val intent = Intent(this, FavoriteActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.action_setting -> {
+                    val intent = Intent(this, SettingActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     private fun setupSearchBar() {
@@ -34,40 +59,37 @@ class HomeActivity : AppCompatActivity() {
                 .setOnEditorActionListener { _, _, _ ->
                     searchBar.setText(searchView.text)
                     searchView.hide()
-                    homeViewModel.getDataSearch(searchView.text.toString())
+                    setupUsers(searchView.text.toString())
                     false
                 }
         }
     }
 
-    private fun setupUsers() {
-        val layoutManager = LinearLayoutManager(this)
-        binding.rvUser.layoutManager = layoutManager
+    private fun setupUsers(username: String) {
+        val adapter = HomeAdapter()
+        binding.rvUser.adapter = adapter
 
-        homeViewModel.listUser.observe(this) { users ->
-            setUsersData(users)
-        }
-        homeViewModel.isLoading.observe(this) {
-            showLoading(it)
-        }
-    }
-
-    private fun setupSnackBar() {
-        homeViewModel.snackbarText.observe(this) {
-            it.getContentIfNotHandled()?.let { snackBarText ->
-                Snackbar.make(
-                    window.decorView.rootView,
-                    snackBarText,
-                    Snackbar.LENGTH_SHORT
-                ).show()
+        homeViewModel.getUsers(username).observe(this) { result ->
+            if (result != null) {
+                when (result) {
+                    is Result.Loading -> {
+                        showLoading(true)
+                    }
+                    is Result.Success -> {
+                        showLoading(false)
+                        adapter.submitList(result.data)
+                    }
+                    is Result.Error -> {
+                        showLoading(false)
+                        Snackbar.make(
+                            window.decorView.rootView,
+                            "Terjadi kesalahan" + result.error,
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+                }
             }
         }
-    }
-
-    private fun setUsersData(users: List<User>) {
-        val adapter = HomeAdapter()
-        adapter.submitList(users)
-        binding.rvUser.adapter = adapter
     }
 
     private fun showLoading(isLoading: Boolean) {

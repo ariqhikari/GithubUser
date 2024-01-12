@@ -4,33 +4,34 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.ariqhikari.githubuser.data.response.User
+import com.ariqhikari.githubuser.data.Result
+import com.ariqhikari.githubuser.data.remote.response.User
 import com.ariqhikari.githubuser.databinding.FragmentDetailItemBinding
+import com.ariqhikari.githubuser.ui.ViewModelFactory
 import com.ariqhikari.githubuser.ui.detail.DetailActivity
 import com.ariqhikari.githubuser.ui.detail.DetailViewModel
 import com.ariqhikari.githubuser.ui.home.HomeAdapter
 
 class DetailItemFragment: Fragment()  {
     private lateinit var binding : FragmentDetailItemBinding
-    private lateinit var detailViewModel: DetailViewModel
+    private val detailViewModel by viewModels<DetailViewModel>{
+        ViewModelFactory.getInstance(requireActivity())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentDetailItemBinding.inflate(inflater, container, false)
-        detailViewModel = ViewModelProvider(this)[DetailViewModel::class.java]
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val layoutManager = LinearLayoutManager(requireContext())
-        binding.rvItems.layoutManager = layoutManager
-
         setupData()
     }
 
@@ -38,29 +39,57 @@ class DetailItemFragment: Fragment()  {
         val username = requireActivity().intent.getStringExtra(DetailActivity.EXTRA_DATA) as String
         val position = arguments?.getInt(ARG_POSITION.toString(), 0)
 
-        if(position == 1) {
-            detailViewModel.getFollower(username)
+        val layoutManager = LinearLayoutManager(requireContext())
+        binding.rvItems.layoutManager = layoutManager
 
-            detailViewModel.listFollower.observe(requireActivity()) { follower ->
-                setData(follower)
+        val adapter = HomeAdapter()
+        binding.rvItems.adapter = adapter
+
+        if(position == 1) {
+            detailViewModel.getFollowers(username).observe(requireActivity()) { result ->
+                if (result != null) {
+                    when (result) {
+                        is Result.Loading -> {
+                        showShimmer(true)
+                        }
+                        is Result.Success -> {
+                            showShimmer(false)
+                            adapter.submitList(result.data)
+                        }
+                        is Result.Error -> {
+                            showShimmer(false)
+                            Toast.makeText(
+                                requireContext(),
+                                "Terjadi kesalahan" + result.error,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
             }
         } else {
-            detailViewModel.getFollowing(username)
-
-            detailViewModel.listFollowing.observe(requireActivity()) { follower ->
-                setData(follower)
+            detailViewModel.getFollowings(username).observe(requireActivity()) { result ->
+                if (result != null) {
+                    when (result) {
+                        is Result.Loading -> {
+                            showShimmer(true)
+                        }
+                        is Result.Success -> {
+                            showShimmer(false)
+                            adapter.submitList(result.data)
+                        }
+                        is Result.Error -> {
+                            showShimmer(false)
+                            Toast.makeText(
+                                requireContext(),
+                                "Terjadi kesalahan" + result.error,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
             }
         }
-
-        detailViewModel.isLoading.observe(requireActivity()) {
-            showShimmer(it)
-        }
-    }
-
-    private fun setData(users: List<User>) {
-        val adapter = HomeAdapter()
-        adapter.submitList(users)
-        binding.rvItems.adapter = adapter
     }
 
     private fun showShimmer(isLoading: Boolean) {

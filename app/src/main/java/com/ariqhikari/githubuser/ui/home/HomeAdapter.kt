@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.ariqhikari.githubuser.R
-import com.ariqhikari.githubuser.data.response.User
+import com.ariqhikari.githubuser.data.remote.response.User
 import com.ariqhikari.githubuser.databinding.ItemRowUsersBinding
 import com.ariqhikari.githubuser.ui.detail.DetailActivity
 import com.bumptech.glide.Glide

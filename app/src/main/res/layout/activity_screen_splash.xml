@@ -1,29 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/hs"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
     tools:context=".ui.splashscreen.SplashScreenActivity">
 
     <ImageView
         android:id="@+id/ivGithub"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_centerInParent="true"
         android:contentDescription="@string/img_github"
-        android:src="@drawable/github" />
+        android:src="@drawable/github"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/tvGithub"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/ivGithub"
         android:layout_alignEnd="@+id/ivGithub"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="102dp"
+        android:layout_marginTop="24dp"
         android:text="@string/app_name"
-        android:textColor="@android:color/black"
         android:textSize="20sp"
-        android:textStyle="bold" />
-</RelativeLayout>
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/ivGithub"
+        app:layout_constraintStart_toStartOf="@+id/ivGithub"
+        app:layout_constraintTop_toBottomOf="@+id/ivGithub" />
+</androidx.constraintlayout.widget.ConstraintLayout>

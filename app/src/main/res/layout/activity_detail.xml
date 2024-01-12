@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.detail.DetailActivity">
 
+
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,22 +19,34 @@
             app:expandedTitleGravity="center"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:background="@android:color/black"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:gravity="center">
+
+                <ImageButton
+                    android:id="@+id/ibBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:backgroundTint="?attr/colorSurface"
+                    android:src="@drawable/ic_back"
+                    android:contentDescription="@string/back"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/cvAvatar"
                     android:layout_width="115dp"
                     android:layout_height="115dp"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="24dp"
                     android:contentDescription="@string/app_name"
                     android:src="@drawable/github"
                     android:transitionName="image"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/ibBack"
                     tools:targetApi="lollipop" />
 
                 <TextView
@@ -43,15 +56,22 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="8dp"
                     android:text="@string/username"
-                    android:textColor="@android:color/white"
-                    android:textSize="18sp" />
-
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@id/cvAvatar"
+                    app:layout_constraintStart_toStartOf="@id/cvAvatar"
+                    app:layout_constraintTop_toBottomOf="@id/cvAvatar" />
 
                 <LinearLayout
+                    android:id="@+id/linearLayout"
                     android:layout_width="340dp"
                     android:layout_height="100dp"
+                    android:layout_marginTop="16dp"
                     android:background="@drawable/style_detail"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvUsername">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -63,8 +83,7 @@
                         <TextView
                             android:layout_width="100dp"
                             android:layout_height="wrap_content"
-                            android:text="@string/name"
-                            android:textColor="@android:color/black" />
+                            android:text="@string/name" />
 
                         <TextView
                             android:id="@+id/tvName"
@@ -72,8 +91,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:paddingStart="20dp"
-                            android:text="@string/nameuser"
-                            android:textColor="@android:color/black"
+                            android:text="@string/name_user"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -87,8 +105,7 @@
                         <TextView
                             android:layout_width="100dp"
                             android:layout_height="wrap_content"
-                            android:text="@string/location"
-                            android:textColor="@android:color/black" />
+                            android:text="@string/location" />
 
                         <TextView
                             android:id="@+id/tvLocation"
@@ -96,8 +113,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:paddingStart="20dp"
-                            android:text="@string/locationuser"
-                            android:textColor="@android:color/black"
+                            android:text="@string/location_user"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -111,8 +127,7 @@
                         <TextView
                             android:layout_width="100dp"
                             android:layout_height="wrap_content"
-                            android:text="@string/company"
-                            android:textColor="@android:color/black" />
+                            android:text="@string/company" />
 
                         <TextView
                             android:id="@+id/tvCompany"
@@ -120,8 +135,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
                             android:paddingStart="20dp"
-                            android:text="@string/companyuser"
-                            android:textColor="@android:color/black"
+                            android:text="@string/company_user"
                             android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
@@ -129,12 +143,16 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="80dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="24dp"
                     app:cardCornerRadius="18dp"
-                    app:cardElevation="8dp">
+                    app:cardElevation="4dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -155,7 +173,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/repository"
-                                android:textColor="@android:color/black"
                                 android:textSize="15sp"
                                 tools:ignore="HardcodedText" />
 
@@ -164,7 +181,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/repo"
-                                android:textColor="@android:color/black"
                                 android:textSize="15sp"
                                 android:textStyle="bold"
                                 tools:ignore="HardcodedText" />
@@ -181,7 +197,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/followers"
-                                android:textColor="@android:color/black"
                                 android:textSize="15sp"
                                 tools:ignore="HardcodedText" />
 
@@ -189,8 +204,7 @@
                                 android:id="@+id/tvFollowers"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/follws"
-                                android:textColor="@android:color/black"
+                                android:text="@string/followers_count"
                                 android:textSize="15sp"
                                 android:textStyle="bold"
                                 tools:ignore="HardcodedText" />
@@ -207,7 +221,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/following"
-                                android:textColor="@android:color/black"
                                 android:textSize="15sp"
                                 tools:ignore="HardcodedText" />
 
@@ -215,8 +228,7 @@
                                 android:id="@+id/tvFollowing"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/follwng"
-                                android:textColor="@android:color/black"
+                                android:text="@string/followings_count"
                                 android:textSize="15sp"
                                 android:textStyle="bold"
                                 tools:ignore="HardcodedText" />
@@ -225,18 +237,14 @@
 
                 </androidx.cardview.widget.CardView>
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabBackground="@android:color/black"
-            app:tabIndicatorColor="@android:color/white"
-            app:tabSelectedTextColor="@android:color/white"
-            app:tabTextColor="@android:color/white" />
+            android:layout_height="wrap_content" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.viewpager2.widget.ViewPager2
@@ -244,5 +252,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabFavorite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="15dp"
+        android:backgroundTint="@color/red"
+        android:contentDescription="@string/favorite"
+        android:src="@drawable/ic_favorite_border" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
